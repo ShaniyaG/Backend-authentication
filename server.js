@@ -3,11 +3,14 @@ const dotenv = require('dotenv').config();
 const logger = require('./middlewares/logger');
 const morgan = require('morgan');
 const colors = require('colors');
-const connectDb = require('./config/db')
+const connectDb = require('./config/db');
+const errorHandler = require('./middlewares/error');
+const cookieParser = require('cookie-parser');
+
 // routes files
 
 const bootcamp = require('./routes/bootcamps');
-
+const auth = require('./routes/auth');
 // Connect to Database
 connectDb();
 
@@ -23,9 +26,15 @@ if(process.env.NODE_ENV === "development"){
 }
 
 // app.use(logger);
-
+app.use(express.json());
+// cookie parser
+app.use(cookieParser())
 // Mount routers
-app.use('/api/v1/bootcamps',bootcamp)
+app.use('/api/v1/bootcamps',bootcamp);
+
+app.use('/api/v1/auth',auth);
+// error Handler
+app.use(errorHandler);
 
 const server = app.listen(PORT,()=>{
     console.log(`Server running at ${PORT}`.yellow.bold)

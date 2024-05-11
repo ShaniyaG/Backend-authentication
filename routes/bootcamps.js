@@ -1,8 +1,11 @@
 const express = require('express');
-const { getBootcamps,getBootcamp,createBootcamps,updateBootcamps,deleteBootcamps } = require('../controllers/bootcamp.controller')
+const { getBootcamps,getBootcamp,createBootcamps,updateBootcamps,deleteBootcamps ,getBootcampWithinRadius } = require('../controllers/bootcamp.controller')
 const router = express.Router();
 
-router.route('/').get(getBootcamps).post(createBootcamps);
-router.route('/:id').get(getBootcamp).put(updateBootcamps).delete(deleteBootcamps);
+const { protect,authorize } = require('../middlewares/auth')
+
+router.route('/radius/:zipcode/:distance').get(getBootcampWithinRadius);
+router.route('/').get(getBootcamps).post(protect,authorize('publisher','admin'),createBootcamps);
+router.route('/:id').get(getBootcamp).put(protect,authorize('publisher','admin'),updateBootcamps).delete(protect,authorize('publisher','admin'), deleteBootcamps);
 
 module.exports = router;
